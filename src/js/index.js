@@ -9,14 +9,15 @@ const $digitButtons = document.querySelectorAll(".digit");
 const $operationButtons = document.querySelectorAll(".operation");
 const $ACButton = $("#modifier");
 
-function initCalculator() {
-  inputNum = 0;
-  operator = "";
-  result = 0;
-  print(result);
+for (let $digitButton of $digitButtons) {
+  $digitButton.addEventListener("click", onClickDigit);
 }
+for (let $operationButton of $operationButtons) {
+  $operationButton.addEventListener("click", onClickOperator);
+}
+$ACButton.addEventListener("click", onClickAC);
 
-function digitClick(event) {
+const onClickDigit = (event) => {
   if (String(inputNum).length >= 3) {
     alert("숫자는 세 자리까지만 입력 가능합니다!");
     return;
@@ -26,31 +27,36 @@ function digitClick(event) {
   storedNum = inputNum;
   checkInputDigit = true;
   print(inputNum);
-}
+};
 
-function operatorClick(event) {
+const onClickOperator = (event) => {
   const newOperator = event.target.innerHTML;
-  if (!checkInputDigit) {
-    setOperator(newOperator);
-    return;
+  if (checkInputDigit) {
+    result = calculate();
+    print(result);
   }
-  result = calculate();
-  print(result);
-  setOperator(newOperator);
-  checkInputDigit = false;
-}
-
-function setOperator(newOperator) {
   inputNum = 0;
+  setOperator(newOperator);
+};
+
+const onClickAC = () => {
+  inputNum = 0;
+  operator = "";
+  result = 0;
+  print(result);
+};
+
+const setOperator = (newOperator) => {
   if (newOperator !== "=") {
     operator = newOperator;
   }
-}
-function print(num) {
+  checkInputDigit = false;
+};
+const print = (num) => {
   $totalView.innerHTML = num;
-}
+};
 
-function calculate() {
+const calculate = () => {
   calculateList = {
     "/": storedNum === 0 ? "Infinity" : parseInt(result / storedNum),
     X: result * storedNum,
@@ -59,12 +65,4 @@ function calculate() {
     "": result || storedNum,
   };
   return calculateList[operator];
-}
-
-for (let digitButton of $digitButtons) {
-  digitButton.addEventListener("click", digitClick);
-}
-for (let operationButton of $operationButtons) {
-  operationButton.addEventListener("click", operatorClick);
-}
-$ACButton.addEventListener("click", initCalculator);
+};
